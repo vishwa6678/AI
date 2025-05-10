@@ -1,0 +1,51 @@
+from collections import deque
+
+class State:
+    def __init__(self, missionaries, cannibals, boat, path=[]):
+        self.m = missionaries
+        self.c = cannibals
+        self.boat = boat  # 1 = left side, 0 = right side
+        self.path = path
+
+    def is_valid(self):
+        if self.m < 0 or self.c < 0 or self.m > 3 or self.c > 3:
+            return False
+        if self.m < self.c and self.m > 0:
+            return False
+        if (3 - self.m) < (3 - self.c) and (3 - self.m) > 0:
+            return False
+        return True
+
+    def is_goal(self):
+        return self.m == 0 and self.c == 0 and self.boat == 0
+
+    def successors(self):
+        moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+        next_states = []
+        for m, c in moves:
+            if self.boat == 1:
+                new_state = State(self.m - m, self.c - c, 0, self.path + [self])
+            else:
+                new_state = State(self.m + m, self.c + c, 1, self.path + [self])
+            if new_state.is_valid():
+                next_states.append(new_state)
+        return next_states
+
+def solve():
+    start = State(3, 3, 1)
+    queue = deque([start])
+    visited = set()
+
+    while queue:
+        state = queue.popleft()
+        if (state.m, state.c, state.boat) in visited:
+            continue
+        visited.add((state.m, state.c, state.boat))
+
+        if state.is_goal():
+            for step in state.path + [state]:
+                print(f"({step.m}, {step.c}, {'Left' if step.boat else 'Right'})")
+            return
+        queue.extend(state.successors())
+
+solve()
