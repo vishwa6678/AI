@@ -1,0 +1,25 @@
+symptom(fever, flu).
+symptom(cough, flu).
+symptom(headache, migraine).
+symptom(nausea, food_poisoning).
+
+% Treatments for each disease
+treatment(flu, 'Rest and drink fluids').
+treatment(migraine, 'Take pain relievers and rest in dark room').
+treatment(food_poisoning, 'Drink water and eat bland food').
+
+% Diagnosis rule
+diagnose(Disease) :-
+    write('Do you have any of these symptoms? '),
+    symptom(Symptom, Disease),
+    write(Symptom), write('? (yes/no) '),
+    read(yes).
+
+% Suggest treatment
+diagnose_and_treat :-
+    diagnose(Disease),
+    treatment(Disease, Treatment),
+    nl, write('You likely have: '), write(Disease), nl,
+    write('Treatment: '), write(Treatment), nl.
+input 
+diagnose_and_treat.

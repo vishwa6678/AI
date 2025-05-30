@@ -1,0 +1,33 @@
+:- dynamic known/1.
+
+% Rules
+has_wings(X) :- bird(X).
+can_fly(X) :- has_wings(X), \+ penguin(X).
+bird(X) :- eagle(X).
+bird(X) :- penguin(X).
+
+% Facts
+eagle(bald_eagle).
+penguin(emperor_penguin).
+
+% Backward chaining engine
+prove(Goal) :-
+    known(Goal), !.  % Already known
+prove(Goal) :-
+    clause(Goal, Body),
+    prove_body(Body),
+    assertz(known(Goal)).
+
+prove_body((A,B)) :- prove(A), prove(B).
+prove_body(true).
+
+% Query interface
+backward_chain(Goal) :-
+    retractall(known(_)),
+    (prove(Goal) ->
+        write('Proved: '), write(Goal), nl
+    ;
+        write('Cannot prove: '), write(Goal), nl
+    ).
+input 
+backward_chain(can_fly(bald_eagle)).

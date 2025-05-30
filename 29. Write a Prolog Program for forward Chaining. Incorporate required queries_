@@ -1,0 +1,56 @@
+% Forward Chaining Engine - Fixed Version
+:- dynamic known/1.
+
+% Clear all previous knowledge
+clear_knowledge :-
+    retractall(known(_)).
+
+% Rule Database (Simplified Animal Identification)
+rule(bird, [has_feathers, lays_eggs]).
+rule(eagle, [bird, can_fly]).
+rule(penguin, [bird, can_swim]).
+rule(mammal, [has_fur, gives_milk]).
+
+% Forward chaining processor
+forward :-
+    findall(Fact,
+            (rule(Fact, Conditions),
+             \+ known(Fact),
+             conditions_met(Conditions)),
+            NewFacts),
+    (NewFacts = [] ->
+        write('No new facts can be derived.'), nl
+    ;
+        process_new_facts(NewFacts),
+        forward
+    ).
+
+conditions_met([]).
+conditions_met([H|T]) :-
+    known(H),
+    conditions_met(T).
+
+process_new_facts([]).
+process_new_facts([H|T]) :-
+    assertz(known(H)),
+    write('Derived new fact: '), write(H), nl,
+    process_new_facts(T).
+
+% Query interface
+run_forward_chaining :-
+    clear_knowledge,
+    % Initial facts
+    assertz(known(has_feathers)),
+    assertz(known(lays_eggs)),
+    assertz(known(can_fly)),
+    write('Starting forward chaining...'), nl,
+    forward,
+    write('Final knowledge base:'), nl,
+    list_known_facts.
+
+list_known_facts :-
+    findall(Fact, known(Fact), Facts),
+    write('Known facts: '), write(Facts), nl.
+
+input
+run_forward_chaining.

@@ -1,0 +1,10 @@
+match([], []).
+match(X, Y) :-
+    var(X), var(Y), X = Y.
+match(X, X) :- atomic(X).
+match([H1|T1], [H2|T2]) :-
+    match(H1, H2),
+    match(T1, T2).
+
+input:
+match([a,X,c], [a,b,c]).
